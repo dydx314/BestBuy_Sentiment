@@ -13,13 +13,13 @@ library(tm)
 library(devtools)
 install_github("twitteR", username="geoffjentry")
 
-api_key <- "eKFISpvFsHsVP6mFMt7A9zSrv"
+api_key <- "YOUR_KEY"
 
-api_secret <- "MNybopaBNlxK66wS4N1QxSfpJIT6ymAI3oibFG5RzxM9jlXv31"
+api_secret <- "YOUR_SECRET"
 
-access_token <- "128727224-14pXnAab6Tcrq4TLOPNaHR29qI4pDYFxK5ZnQ0Wy"
+access_token <- "YOUR_TOCKEN"
 
-access_token_secret <- "cmisiAA2WwSiXmhrVbRY9US8YfG8OpWrh1Dm6NfMb3feZ"
+access_token_secret <- "YOUR_SECRET"
 
 twitteR:::setup_twitter_oauth(api_key,api_secret,access_token,access_token_secret)
 
