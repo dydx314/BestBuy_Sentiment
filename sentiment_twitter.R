@@ -1,25 +1,16 @@
-# required pakacges
+# required packages
 library(twitteR)
 library(sentiment)
-library(plyr)
 library(ggplot2)
-library(wordcloud)
-library(RColorBrewer)
-library(tm)
 
-
-#RESTART R session!
-
-library(devtools)
-install_github("twitteR", username="geoffjentry")
 
 api_key <- "YOUR_KEY"
 
-api_secret <- "YOUR_SECRET"
+api_secret <- "YOUR_SECRET_KEY"
 
-access_token <- "YOUR_TOCKEN"
+access_token <- "YOUR_TOKEN"
 
-access_token_secret <- "YOUR_SECRET"
+access_token_secret <- "YOUR_SECRET_TOKEN"
 
 twitteR:::setup_twitter_oauth(api_key,api_secret,access_token,access_token_secret)
 
@@ -62,15 +53,7 @@ analyse <- function(person, num) {
   names(some_txt) = NULL
   
   
-  # FIRST METHOD
-  
-  #text.corpus <- Corpus(VectorSource(some_txt))
-  #text.corpus <- score.sentiment(text.corpus)
-  
-  
-  
-  
-  # SECOND METHOD
+  # METHOD
   
   # classify emotion
   class_emo = classify_emotion(some_txt, algorithm="bayes", prior=1.0)
@@ -107,14 +90,15 @@ analyse <- function(person, num) {
   #   joy <- sum(sent_df$emotion == "joy")
   #   sadness <- sum(sent_df$emotion == "sadness")
   #   surprise <- sum(sent_df$emotion == "surprise")
+  names(analysis) <- c("Emotion", "DegreeOfEmotion")
   
-  #  donald_trump_analysis = data.frame(c("disgust","fear","anger","joy","sadness","surprise"),c(disgust,fear,anger,joy,sadness,surprise))
-  ggplot(analysis, mapping = aes(V1, V2)) + geom_density() + ggtitle(person) + theme(plot.title = element_text(size=22))
-
+  ggplot(analysis, mapping = aes(Emotion, DegreeOfEmotion)) + geom_density() + ggtitle(paste(person, as.character(num))) + theme(plot.title = element_text(size=22))
   
 }
 
 
+# TO USE:
+analyse("bestbuy", 200)
 
 
 
@@ -125,8 +109,7 @@ analyse <- function(person, num) {
 
 
 
-
-# TESTING
+######## TESTING --- IGNORE ############
 
 some_tweets = twitteR:::searchTwitter("donald trump", n=500, lang="en")
 some_txt = sapply(some_tweets, function(x) x$getText())
@@ -165,52 +148,3 @@ some_txt = sapply(some_txt, try.error)
 some_txt = some_txt[!is.na(some_txt)]
 names(some_txt) = NULL
 
-
-# FIRST METHOD
-
-#text.corpus <- Corpus(VectorSource(some_txt))
-#text.corpus <- score.sentiment(text.corpus)
-
-
-
-
-# SECOND METHOD
-
-# classify emotion
-class_emo = classify_emotion(some_txt, algorithm="bayes", prior=1.0)
-# get emotion best fit
-emotion = class_emo[,7]
-# substitute NA's by "unknown"
-emotion[is.na(emotion)] = "unknown"
-
-# classify polarity
-class_pol = classify_polarity(some_txt, algorithm="bayes")
-# get polarity best fit
-polarity = class_pol[,4]
-
-# data frame with results
-sent_df = data.frame(text=some_txt, emotion=emotion,
-                     polarity=polarity, stringsAsFactors=FALSE)
-
-# sort data frame
-sent_df = within(sent_df,
-                 emotion <- factor(emotion, levels=names(sort(table(emotion), decreasing=TRUE))))
-
-
-# RUN ONLY ONCE
-analysis <- c()
-for (i in unique(sent_df$emotion)) {
-  if (i != "unknown")
-    analysis <- rbind(analysis, c(i, sum(sent_df$emotion == i)))
-}
-analysis <- as.data.frame(analysis)
-analysis$V2  <- as.numeric(as.character(analysis$V2))
-#   disgust <- sum(sent_df$emotion == "disgust")
-#   fear <- sum(sent_df$emotion == "fear")
-#   anger <- sum(sent_df$emotion == "anger")
-#   joy <- sum(sent_df$emotion == "joy")
-#   sadness <- sum(sent_df$emotion == "sadness")
-#   surprise <- sum(sent_df$emotion == "surprise")
-
-#  donald_trump_analysis = data.frame(c("disgust","fear","anger","joy","sadness","surprise"),c(disgust,fear,anger,joy,sadness,surprise))
-ggplot(analysis, mapping = aes(V1, V2)) + geom_density()
